@@ -12,11 +12,12 @@ def ask_human(question: str, display_question: bool) -> str:
 def create_prompt(city, state, country, medical_need, insurance_provider):
     return f"""
     I want to find a {medical_need} doctor that lives close to {city}, {state}, {country}. 
-    I have {insurance_provider} as my insurance provider. Return me the best option.
+    I have {insurance_provider} as my insur›ance provider. Return me the best option.
     """
 
 async def chat_interface():
     print("Welcome to the Medical Finder Chat!")
+
     city = ask_human("Please enter the city:", True)
     state = ask_human("Please enter the state:", True)
     country = ask_human("Please enter the country:", True)
