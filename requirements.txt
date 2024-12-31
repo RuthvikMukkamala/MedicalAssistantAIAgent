@@ -1,0 +1,8 @@
+asyncio
+pandas
+matplotlib
+dataclasses
+typing
+logging
+browser-use-agent-service
+langchain-openai
