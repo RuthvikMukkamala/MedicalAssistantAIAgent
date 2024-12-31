@@ -1,66 +1,98 @@
-import time
 import asyncio
 import pandas as pd
 import matplotlib.pyplot as plt
+from typing import List, Dict, Any
+from dataclasses import dataclass
+from browser_use.agent.service import Agent
 from langchain_openai import ChatOpenAI
-from browser_use.agent.service import Agent, AgentHistory
+import logging
 
-def create_prompt(city, state, country, medical_need):
-    return f"""
-    I want to find a {medical_need} doctor that lives close to {city}, {state}, {country}. Return me the best option.
-    """
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
 
-async def run_benchmark(test_cases):
-    results = []
+@dataclass
+class TestCase:
+    city: str
+    state: str
+    country: str
+    medical_need: str
 
-    for test in test_cases:
-        city = test['city']
-        state = test['state']
-        country = test['country']
-        medical_need = test['medical_need']
+    def __str__(self) -> str:
+        return f"{self.city}, {self.state}, {self.country} ({self.medical_need})"
 
-        prompt = create_prompt(city, state, country, medical_need)
 
-        agent = Agent(
-            task=prompt,
-            llm=ChatOpenAI(model="gpt-4o"),
-        )
+class BenchmarkRunner:
+    def __init__(self, test_cases: List[Dict[str, str]], model_name: str = "gpt-4o"):
+        self.test_cases = [TestCase(**case) for case in test_cases]
+        self.model_name = model_name
+        self.results = []
+        self.llm = ChatOpenAI(model=model_name)
 
-        start_time = time.time()
-        history: list[AgentHistory] = await agent.run()
-        end_time = time.time()
+    def create_prompt(self, test_case: TestCase) -> str:
+        return f"Find a {test_case.medical_need} doctor near {test_case.city}, {test_case.state}, {test_case.country}."
 
-        elapsed_time = end_time - start_time
+    async def run_single_test(self, test_case: TestCase) -> Dict[str, Any]:
+        prompt = self.create_prompt(test_case)
+        agent = Agent(task=prompt, llm=self.llm)
 
-        results.append({
-            "test_case": f"{city}, {state}, {country} ({medical_need})",
-            "history": history,
-            "time_taken": elapsed_time
-        })
+        try:
+            start_time = asyncio.get_event_loop().time()
+            history = await agent.run()
+            elapsed_time = asyncio.get_event_loop().time() - start_time
 
-    return results
+            return {
+                "test_case": str(test_case),
+                "history": history,
+                "time_taken": elapsed_time,
+                "status": "success"
+            }
+        except Exception as e:
+            logging.error(f"Error running test case {test_case}: {str(e)}")
+            return {
+                "test_case": str(test_case),
+                "history": [],
+                "time_taken": 0,
+                "status": "failed",
+                "error": str(e)
+            }
 
-async def evaluate_results(results):
-    data = []
+    async def run_benchmark(self) -> List[Dict[str, Any]]:
+        tasks = [self.run_single_test(test_case) for test_case in self.test_cases]
+        self.results = await asyncio.gather(*tasks)
+        return self.results
 
-    for res in results:
-        data.append({
-            "Test Case": res['test_case'],
-            "Time Taken (s)": res['time_taken'],
-        })
+    def visualize_results(self):
+        if not self.results:
+            logging.warning("No results to visualize.")
+            return
 
-    df = pd.DataFrame(data)
+        df = pd.DataFrame([
+            {
+                "Test Case": r["test_case"],
+                "Time Taken (s)": r["time_taken"],
+                "Status": r["status"]
+            }
+            for r in self.results
+        ])
 
-    print(df)
+        if df.empty:
+            logging.warning("No results to display.")
+            return
 
-    plt.figure(figsize=(10, 6))
-    plt.bar(df["Test Case"], df["Time Taken (s)"])
-    plt.xlabel("Test Cases")
-    plt.ylabel("Time Taken (seconds)")
-    plt.title("Benchmark Results")
-    plt.xticks(rotation=45, ha="right")
-    plt.tight_layout()
-    plt.show()
+        df_success = df[df["Status"] == "success"]
+        if df_success.empty:
+            logging.warning("No successful test cases to visualize.")
+            return
+
+        plt.figure(figsize=(10, 6))
+        plt.bar(df_success["Test Case"], df_success["Time Taken (s)"])
+        plt.title("Benchmark Results")
+        plt.xlabel("Test Cases")
+        plt.ylabel("Time (seconds)")
+        plt.xticks(rotation=45, ha="right")
+        plt.tight_layout()
 
 async def main():
     test_cases = [
@@ -68,16 +100,26 @@ async def main():
         {"city": "New York", "state": "New York", "country": "United States", "medical_need": "Orthodontics"},
         {"city": "San Francisco", "state": "California", "country": "United States", "medical_need": "Dermatology"},
     ]
-
-    results = await run_benchmark(test_cases)
-    await evaluate_results(results)
-    print(results)
-
+    
+    runner = BenchmarkRunner(test_cases)
+    
+    logging.info("Starting benchmark run...")
+    results = await runner.run_benchmark()
+    
+    runner.visualize_results()
+    plt.show()
+    
+    df_results = pd.DataFrame([
+        {
+            "Test Case": r["test_case"],
+            "Time (s)": round(r["time_taken"], 2),
+            "Status": r["status"]
+        }
+        for r in results
+    ])
+    
+    print("\nBenchmark Summary:")
+    print(df_results)
 
 if __name__ == "__main__":
-    loop = asyncio.get_event_loop()
-    if loop.is_running():
-        asyncio.ensure_future(main())
-    else:
-        asyncio.run(main())
-
+    asyncio.run(main())
