@@ -15,8 +15,26 @@ For the AI Agent architecture, we use Browser-Use to help with interacting with 
 
 
 
-Project Set-Up: 
+## Project Set-Up
 
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/your-username/MedicalAssistantAIAgent.git
+   cd MedicalAssistantAIAgent
+
+        ```python
+        python -m venv env
+        source env/bin/activate  # On Windows, use `env\Scripts\activate`
+        pip install -r requirements.txt
+
+To run the main agent:
+
+python agent.py
+
+
+To run the parallelized agent:
+
+python parallel_agent.py
 
 
 
@@ -30,6 +48,18 @@ Using Anthropic's guide to model building, I realized the most optimal workflow 
 
 
 Included in the workflow is the basic agent in agent.py, and the parallel workflow in the parallel_agent.py. The benchmarks are presented below using the same test cases. 
+
+
+
+Architecture Details:
+
+1) Parallelization
+2) 
+
+
+
+
+
 
 
 
