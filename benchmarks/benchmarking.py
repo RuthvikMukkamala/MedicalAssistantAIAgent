@@ -107,21 +107,6 @@ async def main():
     logging.info("Starting benchmark run...")
     results = await runner.run_benchmark()
 
-    # logging.info("Starting benchmark run with model 'gpt-4o'...")
-    # runner_gpt = BenchmarkRunner(test_cases, model_name="gpt-4o")
-    # results_gpt = await runner_gpt.run_benchmark()
-    # logging.info("Benchmark run with model 'gpt-4o' completed.")
-    # print("\n--- Results for gpt-4o ---")
-    # runner_gpt.visualize_results()
-
-
-    # model = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', timeout=25, stop=None, temperature=0.3)
-    # logging.info("Starting benchmark run with model 'claude-3-5-sonnet-20240620'...")
-    # runner_claude = BenchmarkRunner(test_cases, model_name="claude-3-5-sonnet-20240620")
-    # results_claude = await runner_claude.run_benchmark()
-    # logging.info("Benchmark run with model 'claude-3-5-sonnet-20240620' completed.")
-    # print("\n--- Results for claude-3-5-sonnet-20240620 ---")
-    # runner_claude.visualize_results()
 
 if __name__ == "__main__":
     asyncio.run(main())
