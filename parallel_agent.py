@@ -12,7 +12,7 @@ def ask_human(question: str, display_question: bool) -> str:
 def create_prompt(city: str, state: str, country: str, medical_need: str) -> str:
     return f"""
     I want to find a {medical_need} doctor that lives close to {city}, {state}, {country}.
-    Please return the best option available.
+    Please return the best three options available.
     """
 
 def extract_content(result):
@@ -50,7 +50,7 @@ class ParallelMedicalAssistantAIAgent:
             return f"Doctor search failed: {e}"
 
     async def filter_results(self, doctors):
-        prompt = f"Filter the following doctor results to find the most highly rated option: {doctors}"
+        prompt = f"Filter the following doctor results to find the top three highly rated options: {doctors}"
         agent = Agent(task=prompt, llm=self.llm)
         try:
             return await agent.run()
@@ -72,14 +72,14 @@ class ParallelMedicalAssistantAIAgent:
         return await self.filter_results(doctors_result)
 
     async def interactive_session(self):
-        print("Medical Assistant: Find the highest rated doctor for your needs!")
+        print("Medical Assistant: Find the highest rated doctors for your needs!")
 
         city = ask_human("Please enter the city:", True)
         state = ask_human("Please enter the state:", True)
         country = ask_human("Please enter the country:", True)
         medical_need = ask_human("What is your medical need? (e.g., LASIK)", True)
 
-        print("\nFetching the best option for you...")
+        print("\nFetching the best three options for you...")
         result = await self.find_medical_provider_parallel(city, state, country, medical_need)
         # display_result(result)
 

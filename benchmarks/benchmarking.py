@@ -5,6 +5,7 @@ from typing import List, Dict, Any
 from dataclasses import dataclass
 from browser_use.agent.service import Agent
 from langchain_openai import ChatOpenAI
+from langchain_anthropic import ChatAnthropic
 import logging
 
 logging.basicConfig(
@@ -31,7 +32,7 @@ class BenchmarkRunner:
         self.llm = ChatOpenAI(model=model_name)
 
     def create_prompt(self, test_case: TestCase) -> str:
-        return f"Find a {test_case.medical_need} doctor near {test_case.city}, {test_case.state}, {test_case.country}."
+        return f"Find the best three {test_case.medical_need} doctor near {test_case.city}, {test_case.state}, {test_case.country}."
 
     async def run_single_test(self, test_case: TestCase) -> Dict[str, Any]:
         prompt = self.create_prompt(test_case)
@@ -105,21 +106,23 @@ async def main():
     
     logging.info("Starting benchmark run...")
     results = await runner.run_benchmark()
-    
-    # runner.visualize_results()
-    # plt.show()
-    
-    # df_results = pd.DataFrame([
-    #     {
-    #         "Test Case": r["test_case"],
-    #         "Time (s)": round(r["time_taken"], 2),
-    #         "Status": r["status"]
-    #     }
-    #     for r in results
-    # ])
-    
-    # print("\nBenchmark Summary:")
-    # print(df_results)
+
+    # logging.info("Starting benchmark run with model 'gpt-4o'...")
+    # runner_gpt = BenchmarkRunner(test_cases, model_name="gpt-4o")
+    # results_gpt = await runner_gpt.run_benchmark()
+    # logging.info("Benchmark run with model 'gpt-4o' completed.")
+    # print("\n--- Results for gpt-4o ---")
+    # runner_gpt.visualize_results()
+
+
+    # model = ChatAnthropic(model_name='claude-3-5-sonnet-20240620', timeout=25, stop=None, temperature=0.3)
+    # logging.info("Starting benchmark run with model 'claude-3-5-sonnet-20240620'...")
+    # runner_claude = BenchmarkRunner(test_cases, model_name="claude-3-5-sonnet-20240620")
+    # results_claude = await runner_claude.run_benchmark()
+    # logging.info("Benchmark run with model 'claude-3-5-sonnet-20240620' completed.")
+    # print("\n--- Results for claude-3-5-sonnet-20240620 ---")
+    # runner_claude.visualize_results()
 
 if __name__ == "__main__":
     asyncio.run(main())
+

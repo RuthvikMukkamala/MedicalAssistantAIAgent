@@ -11,7 +11,7 @@ def ask_human(question: str, display_question: bool) -> str:
 def create_prompt(city: str, state: str, country: str, medical_need: str) -> str:
     return f"""
     I want to find a {medical_need} doctor that lives close to {city}, {state}, {country}.
-    Please return the best option available.
+    Please return the best three options available.
     """
 
 class MedicalAssistantAIAgent:
@@ -39,7 +39,7 @@ class MedicalAssistantAIAgent:
         country = ask_human("Please enter the country:", True)
         medical_need = ask_human("What is your medical need? (e.g., LASIK)", True)
 
-        print("\nFetching the best option for you...")
+        print("\nFetching the best three options for you...")
         result = await self.find_medical_provider(city, state, country, medical_need)
         print("\nResult:")
         print(result)
