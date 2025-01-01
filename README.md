@@ -22,19 +22,23 @@ For the AI Agent architecture, we use Browser-Use to help with interacting with 
    git clone https://github.com/your-username/MedicalAssistantAIAgent.git
    cd MedicalAssistantAIAgent
 
-        ```python
-        python -m venv env
-        source env/bin/activate  # On Windows, use `env\Scripts\activate`
-        pip install -r requirements.txt
+2. Run the code
 
-To run the main agent:
+   ```python
+   python -m venv env
+   source env/bin/activate  # On Windows, use `env\Scripts\activate`
+   pip install -r requirements.txt
 
-python agent.py
+3. To run the main agent:
+
+   ```python
+   python agent.py
 
 
-To run the parallelized agent:
-
-python parallel_agent.py
+4. To run the parallelized agent:
+   
+   ```python
+   python parallel_agent.py
 
 
 
@@ -53,12 +57,10 @@ Included in the workflow is the basic agent in agent.py, and the parallel workfl
 
 Architecture Details:
 
-1) Parallelization
-2) 
-
-
-
-
+1) Parallelization (breakdown the location, doctor, and result filtering into different LLM prompts)
+2) Optimize the precision of the prompts
+3) Use different LLMs (in this case GPT and Claude)
+4) The code was implemented into three files, agent.py, parallel_agent.py, and benchmarks/benchmarking.py
 
 
 
@@ -67,19 +69,39 @@ Architecture Details:
 Benchmarking:
 
 
-We had three test cases that we passed to the AI Agent: 
+1) We had three test cases that we passed to the AI Agent: 
 
-test_cases = [
-        {"city": "Princeton", "state": "New Jersey", "country": "United States", "medical_need": "LASIK"},
-        {"city": "New York", "state": "New York", "country": "United States", "medical_need": "Orthodontics"},
-        {"city": "San Francisco", "state": "California", "country": "United States", "medical_need": "Dermatology"},
-    ]
+   ```python
+   test_cases = [
+           {"city": "Princeton", "state": "New Jersey", "country": "United States", "medical_need": "LASIK"},
+           {"city": "New York", "state": "New York", "country": "United States", "medical_need": "Orthodontics"},
+           {"city": "San Francisco", "state": "California", "country": "United States", "medical_need": "Dermatology"},
+       ]
 
-We run this with GPT-4o (Free) and Claude. We find how long the model takes to complete each task and present the data in a visual format. Based on this information, we extend the task to run a parallel agent architecture to break down LLM tasks to attempt the performance of the model. 
+
+2) We run this with GPT-4o (Free) and Claude. We find how long the model takes to complete each task and present the data in a visual format. Based on this information, we extend the task to run a parallel agent architecture to break down LLM tasks to attempt the performance of the model. 
 
 
-Benchmark Presentation:
+3) Benchmark Presentation:
 
+Broken down into Task Completion Time and Quality of Results (> 4.8 average rating w/ over atleast 10 ratings)
+
+Here are the results of the GPT-4o model with the Task Completion Time
+<img width="986" alt="Screenshot 2024-12-31 at 5 20 24 PM" src="https://github.com/user-attachments/assets/837d3de1-dbbf-4794-b177-f430ddded801" />
+
+
+Here are the results of Claude's Task Completion Time
+<img width="762" alt="Screenshot 2025-01-01 at 12 09 16 AM" src="https://github.com/user-attachments/assets/b9bd9093-840e-4aa9-ba9b-7ce32a76325b" />
+
+
+Here are the Quality of Results of the GPT-4o model (looking for average rating and institutions)
+
+
+
+Here are the Quality of Results of Claude 3.5 (looking for average rating and institutions)
+
+
+<img width="764" alt="Screenshot 2025-01-01 at 12 10 00 AM" src="https://github.com/user-attachments/assets/0741a189-4f35-4d54-9ed5-bf78ec458bde" />
 
 
 
