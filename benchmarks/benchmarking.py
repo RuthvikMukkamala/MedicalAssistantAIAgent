@@ -31,12 +31,16 @@ class BenchmarkRunner:
         self.llm = self.get_model_instance(model_name)
 
     def get_model_instance(self, model_name: str):
+
         if model_name.startswith("gpt"):
             logging.info(f"Using OpenAI model: {model_name}")
             return ChatOpenAI(model=model_name)
+
         elif model_name.startswith("claude"):
+
             logging.info(f"Using Anthropic model: {model_name}")
             return ChatAnthropic(model=model_name)
+            
         else:
             raise ValueError(f"Unsupported model name: {model_name}")
 
