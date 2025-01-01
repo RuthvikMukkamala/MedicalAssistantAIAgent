@@ -124,7 +124,7 @@ For Claude, we notice that the model takes more time (approx. 3x times) to compl
 Oservations and notes about the agents performance throughout the iteration and development
 
     1. Where is the agent performant?
-The agent is perfomant given strict geographic locations and a precise medical requirement i.e the prompt is flush with information for the agent to precisely act upon. This can be judged through 
+The agent is perfomant given strict geographic locations and a precise medical requirement i.e the prompt is flush with information for the agent to precisely act upon. This can be judged through the benchmarking shown above. 
 
     2. Where does it struggle?
 The agent struggles with typos in the input string, as well as asking for a large magnitude of output (> 5 doctors for example). This is because the web scrolling of the Browser-Use is limited, and the model is lazy - once it completes a goal it will submit. 
