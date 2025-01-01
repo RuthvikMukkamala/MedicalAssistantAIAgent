@@ -29,16 +29,26 @@ For the AI Agent architecture, we use Browser-Use to help with interacting with 
    source env/bin/activate  # On Windows, use `env\Scripts\activate`
    pip install -r requirements.txt
 
-3. To run the main agent:
+3. Create a .env file in the root directory
+   ```bash
+   OPENAI_API_KEY=
+   ANTHROPIC_API_KEY=
+
+5. To run the main agent:
 
    ```python
    python agent.py
 
 
-4. To run the parallelized agent:
+6. To run the parallelized agent:
    
    ```python
    python parallel_agent.py
+
+7. To run the benchmarks:
+   
+   ```python
+   python benchmarks/benchmarking.py
 
 
 Agentic Architecture:
