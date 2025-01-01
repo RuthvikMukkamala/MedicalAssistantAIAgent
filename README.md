@@ -41,10 +41,6 @@ For the AI Agent architecture, we use Browser-Use to help with interacting with 
    python parallel_agent.py
 
 
-
-
-
-
 Agentic Architecture:
 
 
@@ -96,6 +92,7 @@ Here are the results of Claude's Task Completion Time
 
 Here are the Quality of Results of the GPT-4o model (looking for average rating and institutions)
 
+<img width="659" alt="Screenshot 2025-01-01 at 9 14 13 AM" src="https://github.com/user-attachments/assets/572bb6a8-1a1e-4340-957a-8d90836d5958" />
 
 
 Here are the Quality of Results of Claude 3.5 (looking for average rating and institutions)
@@ -105,12 +102,10 @@ Here are the Quality of Results of Claude 3.5 (looking for average rating and in
 
 
 
+Observations from Benchmarks: 
 
-
-Video Presentation:
-
-
-
+We notice that GPT-4o takes less time to complete the task, with the average rating (from the Google API + web browsing) is approximately 4.8 - 5 stars. The drawback is that the model chooses doctors from the same medical institution. 
+For Claude, we notice that the model takes more time (approx. 3x times) to complete the task, with the average rating (from the Google API + web browsing) is also approximately 4.8 - 5 stars. The benefit from Claude however is that the model chooses doctors from the a diverse group of medical institutions providing a higher quality of results. When testing a simple agentic workflow (LLM Prompt --> Web) achieves similar results in the benchmarking with the parallelized architecture i.e same ratings and same institutions. As we build more complexity into the agent workflow however (adding more client restrictions), the parallelized architecture poses to have better quality of results due to filtering based on a group of subtasks. 
 
 
 
@@ -125,11 +120,12 @@ The agent is perfomant given strict geographic locations and a precise medical r
 The agent struggles with typos in the input string, as well as asking for a large magnitude of output (> 5 doctors for example). This is because the web scrolling of the Browser-Use is limited, and the model is lazy - once it completes a goal it will submit. 
 
     3. Do certain LLMs perform better with this task?
-
+To get better results, we can use a more token heavy model such as Claude 3.5 over GPT-4o for result improvement - meaning the quality of the results with higher average rating and a larger distribution over medical institutions. 
 
 
     4. How would you improve the agent in the future?
-
+I would implement a typo correction for user inputs so the parallelized model does not get stuck on incorrect geographics for example. Furthermore, build onto the model complexity by adding insurance, years of experience, and distance from client, 
+and finally improve the "retry" mechanism of continuing till a proper distribution of results is achieved. 
 
 
 
