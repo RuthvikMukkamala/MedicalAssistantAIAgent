@@ -23,16 +23,25 @@ class TestCase:
     def __str__(self) -> str:
         return f"{self.city}, {self.state}, {self.country} ({self.medical_need})"
 
-
 class BenchmarkRunner:
     def __init__(self, test_cases: List[Dict[str, str]], model_name: str = "gpt-4o"):
         self.test_cases = [TestCase(**case) for case in test_cases]
         self.model_name = model_name
         self.results = []
-        self.llm = ChatOpenAI(model=model_name)
+        self.llm = self.get_model_instance(model_name)
+
+    def get_model_instance(self, model_name: str):
+        if model_name.startswith("gpt"):
+            logging.info(f"Using OpenAI model: {model_name}")
+            return ChatOpenAI(model=model_name)
+        elif model_name.startswith("claude"):
+            logging.info(f"Using Anthropic model: {model_name}")
+            return ChatAnthropic(model=model_name)
+        else:
+            raise ValueError(f"Unsupported model name: {model_name}")
 
     def create_prompt(self, test_case: TestCase) -> str:
-        return f"Find the best three {test_case.medical_need} doctor near {test_case.city}, {test_case.state}, {test_case.country}."
+        return f"Find the best three {test_case.medical_need} doctors near {test_case.city}, {test_case.state}, {test_case.country}."
 
     async def run_single_test(self, test_case: TestCase) -> Dict[str, Any]:
         prompt = self.create_prompt(test_case)
@@ -82,18 +91,8 @@ class BenchmarkRunner:
             logging.warning("No results to display.")
             return
 
-        df_success = df[df["Status"] == "success"]
-        if df_success.empty:
-            logging.warning("No successful test cases to visualize.")
-            return
-
-        plt.figure(figsize=(10, 6))
-        plt.bar(df_success["Test Case"], df_success["Time Taken (s)"])
-        plt.title("Benchmark Results")
-        plt.xlabel("Test Cases")
-        plt.ylabel("Time (seconds)")
-        plt.xticks(rotation=45, ha="right")
-        plt.tight_layout()
+        print("\n--- Benchmark Results ---")
+        print(df.to_string(index=False))
 
 async def main():
     test_cases = [
@@ -101,13 +100,18 @@ async def main():
         {"city": "New York", "state": "New York", "country": "United States", "medical_need": "Orthodontics"},
         {"city": "San Francisco", "state": "California", "country": "United States", "medical_need": "Dermatology"},
     ]
-    
-    runner = BenchmarkRunner(test_cases)
-    
-    logging.info("Starting benchmark run...")
-    results = await runner.run_benchmark()
 
+    logging.info("Starting benchmark run with OpenAI model 'gpt-4o'...")
+    runner_gpt = BenchmarkRunner(test_cases, model_name="gpt-4o")
+    results_gpt = await runner_gpt.run_benchmark()
+    logging.info("Benchmark run with OpenAI model 'gpt-4o' completed.")
+    runner_gpt.visualize_results()
+
+    logging.info("Starting benchmark run with Anthropic model 'claude-3-5-sonnet-20240620'...")
+    runner_claude = BenchmarkRunner(test_cases, model_name="claude-3-5-sonnet-20240620")
+    results_claude = await runner_claude.run_benchmark()
+    logging.info("Benchmark run with Anthropic model 'claude-3-5-sonnet-20240620' completed.")
+    runner_claude.visualize_results()
 
 if __name__ == "__main__":
     asyncio.run(main())
-
