@@ -106,20 +106,20 @@ async def main():
     logging.info("Starting benchmark run...")
     results = await runner.run_benchmark()
     
-    runner.visualize_results()
-    plt.show()
+    # runner.visualize_results()
+    # plt.show()
     
-    df_results = pd.DataFrame([
-        {
-            "Test Case": r["test_case"],
-            "Time (s)": round(r["time_taken"], 2),
-            "Status": r["status"]
-        }
-        for r in results
-    ])
+    # df_results = pd.DataFrame([
+    #     {
+    #         "Test Case": r["test_case"],
+    #         "Time (s)": round(r["time_taken"], 2),
+    #         "Status": r["status"]
+    #     }
+    #     for r in results
+    # ])
     
-    print("\nBenchmark Summary:")
-    print(df_results)
+    # print("\nBenchmark Summary:")
+    # print(df_results)
 
 if __name__ == "__main__":
     asyncio.run(main())
